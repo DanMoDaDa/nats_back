@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.danmo.mapper.RoleMapper">
+
+    <select id="getPrivileges" resultType="org.danmo.domain.entity.Privilege">
+        SELECT
+            tp.*
+        FROM
+            t_role tr
+            JOIN t_resource_allocation tra ON tra.higher_id = tr.id and tra.type = 1
+            JOIN t_privilege tp ON tra.lower_id = tp.id
+        WHERE tr.id = #{id}
+          and tr.del_flag = 0
+          and tra.del_flag = 0
+          and tp.del_flag = 0
+    </select>
+
+</mapper>

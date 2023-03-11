@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.danmo.mapper.UserMapper">
+
+    <select id="getRoles" resultType="org.danmo.domain.entity.Role">
+        SELECT
+            tr.*
+        FROM
+            t_user tu
+            JOIN t_resource_allocation tra ON tra.higher_id = tu.id and tra.type = 0
+            JOIN t_role tr ON tra.lower_id = tr.id
+        WHERE tu.id = #{id}
+          and tu.del_flag = 0
+          and tra.del_flag = 0
+          and tr.del_flag = 0
+    </select>
+
+    <select id="getPrivileges" resultType="org.danmo.domain.entity.Privilege">
+        SELECT
+            tp.*
+        FROM
+            t_role tr
+            JOIN t_resource_allocation tra1 ON tra1.lower_id = tr.id
+            JOIN t_resource_allocation tra2 ON tra2.higher_id = tr.id
+            JOIN t_privilege tp ON tra2.lower_id = tp.id
+        WHERE tra1.higher_id = #{id}
+          and tr.del_flag = 0
+          and tra1.del_flag = 0
+          and tra2.del_flag = 0
+          and tp.del_flag = 0
+    </select>
+
+    <select id="getSuperiors" resultType="org.danmo.domain.entity.User">
+        SELECT
+            tu.*
+        FROM
+            t_user tu
+        WHERE
+            tu.id IN (
+            SELECT
+                temp.higher_id
+            FROM
+                (
+                    SELECT
+                        tra.higher_id
+                    FROM
+                        t_resource_allocation tra
+                            LEFT JOIN t_role tr ON tra.lower_id = tr.id
+                            AND tra.type = 0
+                    WHERE
+                        tra.del_flag = 0
+                      AND tr.del_flag = 0
+                      AND tr.`level` = 1
+                ) temp
+            )
+            AND tu.del_flag = 0
+    </select>
+
+    <select id="getUnderlings" resultType="org.danmo.domain.entity.User">
+        SELECT
+            tu.*
+        FROM
+            t_user tu
+        WHERE
+            tu.id IN (
+            SELECT
+                temp.higher_id
+            FROM
+                (
+                    SELECT
+                        tra.higher_id
+                    FROM
+                        t_resource_allocation tra
+                            LEFT JOIN t_role tr ON tra.lower_id = tr.id
+                            AND tra.type = 0
+                    WHERE
+                        tra.del_flag = 0
+                      AND tr.del_flag = 0
+                      AND tr.`level` > 1
+                    <if test="superiorId != null and superiorId != ''">
+                        AND tra.higher_id = #{superiorId}
+                    </if>
+                ) temp
+            )
+            AND tu.del_flag = 0
+    </select>
+
+</mapper>

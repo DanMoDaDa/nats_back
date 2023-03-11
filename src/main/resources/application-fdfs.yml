@@ -1,0 +1,17 @@
+fdfs:
+  connect-timeout: 1500
+  so-timeout: 600
+  pool:
+    max-total: 200
+    max-total-per-key: 50
+    max-wait-millis: 5000
+  thumb-image: # 缩略图
+    width: 150
+    height: 150
+  tracker-list: 182.61.58.90:22122
+
+spring:
+  servlet:
+    multipart:
+      max-file-size: 50MB # maxFileSize 单个数据大小
+      max-request-size: 300MB  # maxRequestSize 是总数据大小
