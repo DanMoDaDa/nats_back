@@ -5,14 +5,19 @@ import lombok.Data;
 import org.danmo.domain.entity.base.BaseEntity;
 
 /**
- * 权限
+ * 附件
  * @author danmo
  */
 @Data
-@TableName(value = "t_privilege")
-public class Privilege extends BaseEntity {
+@TableName(value = "t_appendix")
+public class Appendix extends BaseEntity {
 
-    private String privilegeName;
+    private String name;
 
-    private String privilegeCode;
+    private String type;
+
+    private String url;
+
+    private Long size;
+
 }

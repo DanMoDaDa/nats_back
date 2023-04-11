@@ -1,12 +1,13 @@
 package org.danmo.controller;
 
-import org.danmo.service.TestService;
+import org.danmo.service.OrgService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class TestController {
+public class OrgController {
 
     @Autowired
-    private TestService testService;
+    private OrgService orgService;
+
 }

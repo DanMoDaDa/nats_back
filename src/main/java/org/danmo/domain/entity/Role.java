@@ -4,6 +4,10 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import org.danmo.domain.entity.base.BaseEntity;
 
+/**
+ * 角色
+ * @author adnmo
+ */
 @Data
 @TableName(value = "t_role")
 public class Role extends BaseEntity {

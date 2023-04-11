@@ -4,6 +4,10 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import org.danmo.domain.entity.base.BaseEntity;
 
+/**
+ * 用户
+ * @author danmo
+ */
 @Data
 @TableName(value = "t_user")
 public class User extends BaseEntity {
@@ -14,7 +18,7 @@ public class User extends BaseEntity {
 
     private String password;
 
-    private String headImg_url;
+    private String headImgUrl;
 
     private String email;
 

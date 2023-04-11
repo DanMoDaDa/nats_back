@@ -4,6 +4,10 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import org.danmo.domain.entity.base.BaseEntity;
 
+/**
+ * 资源分配
+ * @author danmo
+ */
 @Data
 @TableName(value = "t_resource_allocation")
 public class ResourceAllocation extends BaseEntity {
