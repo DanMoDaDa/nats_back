@@ -10,6 +10,11 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 public class FileController {
 
+    /**
+     * 上传文件
+     * @param file
+     * @return
+     */
     @PostMapping("/file/upload")
     public AjaxResult upload(MultipartFile file) {
         try {
@@ -20,6 +25,11 @@ public class FileController {
         }
     }
 
+    /**
+     * 删除文件
+     * @param url
+     * @return
+     */
     @PostMapping("/file/delete")
     public AjaxResult delete(String url) {
         try {

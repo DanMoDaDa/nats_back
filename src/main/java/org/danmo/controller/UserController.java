@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.extern.slf4j.Slf4j;
 import org.danmo.cache.LocalCache;
 import org.danmo.domain.AjaxResult;
+import org.danmo.domain.dto.UserDto;
 import org.danmo.domain.entity.User;
 import org.danmo.domain.vo.UserVo;
 import org.danmo.service.UserService;
@@ -28,6 +29,11 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    /**
+     * 登录
+     * @param user
+     * @return
+     */
     @PostMapping("/login")
     public AjaxResult login(@RequestBody User user){
         log.info("------------------用户登录，用户信息："+JSONUtil.toJsonStr(user)+"-------------------");
@@ -55,6 +61,11 @@ public class UserController {
         }
     }
 
+    /**
+     * 退出登录
+     * @param request
+     * @return
+     */
     @PostMapping("/logout")
     public AjaxResult logout(HttpServletRequest request){
         String token = request.getHeader("token");
@@ -63,6 +74,11 @@ public class UserController {
         return AjaxResult.success();
     }
 
+    /**
+     * 检查token
+     * @param request
+     * @return
+     */
     @PostMapping("/checkToken")
     public AjaxResult checkToken(HttpServletRequest request){
         String token = request.getHeader("token");
@@ -72,12 +88,77 @@ public class UserController {
         return flag?AjaxResult.success(userVo):AjaxResult.error();
     }
 
+    /**
+     * 查询用户列表
+     * @param dto
+     * @return
+     */
+    @PostMapping("/list/user")
+    public AjaxResult userList(@RequestBody UserDto dto){
+        List<User> users = userService.getList(dto);
+        return AjaxResult.success(users);
+    }
+
+    /**
+     * 查询用户列表（用户携带角色和权限）
+     * @param dto
+     * @return
+     */
+    @PostMapping("/List/user")
+    public AjaxResult getUsers(@RequestBody UserDto dto){
+        List<User> users = userService.getList(dto);
+        List<UserVo> vos = userService.toUserVo(users);
+        return AjaxResult.success(vos);
+    }
+
+    /**
+     * 新增用户
+     * @param user
+     * @return
+     */
+    @PostMapping("/save/user")
+    public AjaxResult saveUser(@RequestBody User user){
+        if(StringUtils.isEmpty(user.getId())) {
+            //初始密码
+            user.setPassword(SecureUtil.md5("hjt6666"));
+        }
+        return userService.saveOrUpdate(user)?AjaxResult.success():AjaxResult.error();
+    }
+
+    /**
+     * 删除用户
+     * @param user
+     * @return
+     */
+    @PostMapping("/delete/user")
+    public AjaxResult deleteUser(@RequestBody User user){
+        return userService.removeById(user)?AjaxResult.success():AjaxResult.error();
+    }
+
+    /**
+     * 更新用户
+     * @param user
+     * @return
+     */
+    @PostMapping("/update/user")
+    public AjaxResult updateUser(@RequestBody User user){
+        return userService.updateById(user)?AjaxResult.success():AjaxResult.error();
+    }
+
+    /**
+     * 查询所有有下属的用户
+     * @return
+     */
     @PostMapping("/list/superior")
     public AjaxResult getSuperiors(){
         List<UserVo> superiors = userService.getSuperiors();
         return AjaxResult.success(superiors);
     }
 
+    /**
+     * 查询所有有上级的用户
+     * @return
+     */
     @PostMapping("/list/underling")
     public AjaxResult getUnderlings(){
         List<UserVo> underlings = userService.getUnderlings(null);

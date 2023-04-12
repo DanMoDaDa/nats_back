@@ -9,15 +9,15 @@ import org.danmo.domain.entity.base.BaseEntity;
  * @author danmo
  */
 @Data
-@TableName(value = "t_organization")
-public class Org extends BaseEntity {
+@TableName(value = "t_audit")
+public class Audit extends BaseEntity {
 
-    private String orgName;
+    private String contentId;
 
-    private String orgCode;
+    private Integer contentType;
 
-    private String adminId;
+    private Integer status;
 
-    private String appendix;
+    private String remark;
 
 }

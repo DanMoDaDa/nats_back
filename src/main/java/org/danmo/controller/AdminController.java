@@ -1,161 +1,134 @@
 package org.danmo.controller;
 
-import cn.hutool.crypto.SecureUtil;
-import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import org.danmo.domain.AjaxResult;
-import org.danmo.domain.dto.PrivilegeDto;
-import org.danmo.domain.dto.RoleDto;
-import org.danmo.domain.dto.UserDto;
-import org.danmo.domain.entity.Privilege;
-import org.danmo.domain.entity.Role;
+import org.danmo.domain.dto.*;
 import org.danmo.domain.entity.User;
-import org.danmo.domain.vo.RoleVo;
 import org.danmo.domain.vo.UserVo;
 import org.danmo.service.AdminService;
-import org.danmo.service.PrivilegeService;
-import org.danmo.service.RoleService;
-import org.danmo.service.UserService;
-import org.springframework.beans.BeanUtils;
+import org.danmo.utils.BeanUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @RestController
 public class AdminController {
     @Autowired
     private AdminService adminService;
 
-    @Autowired
-    private UserService userService;
-
-    @Autowired
-    private RoleService roleService;
-
-    @Autowired
-    private PrivilegeService privilegeService;
-
-    @PostMapping("/list/user")
-    public AjaxResult userList(@RequestBody UserDto dto){
-        List<User> users = userService.getList(dto);
-        return AjaxResult.success(users);
+    /**
+     * 分配组织
+     * @param map
+     * @return
+     */
+    @PostMapping("/assign/organization")
+    public AjaxResult assignOrganization(@RequestBody Map<String,Object> map){
+        List<String> userIds = (List<String>) map.get("userIds");
+        String orgId = (String) map.get("orgId");
+        boolean flag = adminService.assignOrganization(userIds,orgId);
+        return flag?AjaxResult.success():AjaxResult.error();
     }
 
-    @PostMapping("/List/user")
-    public AjaxResult getUsers(@RequestBody UserDto dto){
-        List<User> users = userService.getList(dto);
-        List<UserVo> vos = userService.toUserVo(users);
-        return AjaxResult.success(vos);
-    }
-
-    @PostMapping("/save/user")
-    public AjaxResult saveUser(@RequestBody User user){
-        if(StringUtils.isEmpty(user.getId()))
-            user.setPassword(SecureUtil.md5("hjt6666"));
-        return userService.saveOrUpdate(user)?AjaxResult.success():AjaxResult.error();
-    }
-
-    @PostMapping("/delete/user")
-    public AjaxResult deleteUser(@RequestBody User user){
-        return userService.removeById(user)?AjaxResult.success():AjaxResult.error();
-    }
-
-    @PostMapping("/update/user")
-    public AjaxResult updateUser(@RequestBody User user){
-        return userService.updateById(user)?AjaxResult.success():AjaxResult.error();
-    }
-
-    @PostMapping("/list/role")
-    public AjaxResult roleList(@RequestBody RoleDto dto){
-        List<Role> roles = roleService.getList(dto);
-        return AjaxResult.success(roles);
-    }
-
-    @PostMapping("/List/role")
-    public AjaxResult getRoles(@RequestBody RoleDto dto){
-        List<Role> roles = roleService.getList(dto);
-        List<RoleVo> vos = roles.stream().map(item -> {
-            RoleVo vo = new RoleVo();
-            BeanUtils.copyProperties(item , vo);
-            vo.setPrivileges(roleService.getPricileges(item.getId()));
-            return vo;
-        }).collect(Collectors.toList());
-        return AjaxResult.success(vos);
-    }
-
-    @PostMapping("/save/role")
-    public AjaxResult saveRole(@RequestBody Role role){
-        return roleService.saveOrUpdate(role)?AjaxResult.success():AjaxResult.error();
-    }
-
-    @PostMapping("/delete/role")
-    public AjaxResult deleteRole(@RequestBody Role role){
-        role.setDelFlag(true);
-        return roleService.updateById(role)?AjaxResult.success():AjaxResult.error();
-    }
-
-    @PostMapping("/update/role")
-    public AjaxResult updateRole(@RequestBody Role role){
-        return roleService.updateById(role)?AjaxResult.success():AjaxResult.error();
-    }
-
-    @PostMapping("/list/privilege")
-    public AjaxResult privilegeList(@RequestBody PrivilegeDto dto){
-        List<Privilege> users = privilegeService.getList(dto);
-        return AjaxResult.success(users);
-    }
-
-    @PostMapping("/save/privilege")
-    public AjaxResult savePrivilege(@RequestBody Privilege privilege){
-        return privilegeService.saveOrUpdate(privilege)?AjaxResult.success():AjaxResult.error();
-    }
-
-    @PostMapping("/delete/privilege")
-    public AjaxResult deletePrivilege(@RequestBody Privilege privilege){
-        return privilegeService.updateById(privilege)?AjaxResult.success():AjaxResult.error();
-    }
-
-    @PostMapping("/update/privilege")
-    public AjaxResult updatePrivilege(@RequestBody Privilege privilege){
-        return privilegeService.updateById(privilege)?AjaxResult.success():AjaxResult.error();
-    }
-
+    /**
+     * 分配角色
+     * @param map
+     * @return
+     */
     @PostMapping("/assign/roles")
     public AjaxResult assignRoles(@RequestBody Map<String,Object> map){
         String userId = (String) map.get("userId");
         List<String> roleIds = (List<String>) map.get("roleIds");
         try {
-            adminService.resourceAllocation(userId , roleIds , 0);
+            boolean flag = adminService.resourceAllocation(userId, roleIds, 0);
+            if(!flag) {
+                return AjaxResult.error();
+            }
         } catch (Exception e) {
             return AjaxResult.error(e.getMessage());
         }
         return AjaxResult.success();
     }
 
+    /**
+     * 分配权限
+     * @param map
+     * @return
+     */
     @PostMapping("/assign/privileges")
     public AjaxResult assignPrivileges(@RequestBody Map<String,Object> map){
         String roleId = (String) map.get("roleId");
         List<String> privilegeIds = (List<String>) map.get("privilegeIds");
         try {
-            adminService.resourceAllocation(roleId , privilegeIds , 1);
+            boolean flag = adminService.resourceAllocation(roleId, privilegeIds, 1);
+            if(!flag) {
+                return AjaxResult.error();
+            }
         } catch (Exception e) {
             return AjaxResult.error(e.getMessage());
         }
         return AjaxResult.success();
     }
 
+    /**
+     * 分配下属
+     * @param map
+     * @return
+     */
     @PostMapping("/assign/underlings")
     public AjaxResult assignUnderlings(@RequestBody Map<String,Object> map){
         String roleId = (String) map.get("superiorId");
         List<String> underlingIds = (List<String>) map.get("underlingIds");
         try {
-            adminService.resourceAllocation(roleId , underlingIds , 2);
+            boolean flag = adminService.resourceAllocation(roleId, underlingIds, 2);
+            if(!flag) {
+                return AjaxResult.error();
+            }
         } catch (Exception e) {
             return AjaxResult.error(e.getMessage());
         }
         return AjaxResult.success();
+    }
+
+    /**
+     * 保存组织
+     * @param orgDto
+     * @return
+     */
+    @PostMapping("/save/organization")
+    public AjaxResult saveOrganization(@RequestBody OrgDto orgDto){
+        try {
+            adminService.saveOrganization(orgDto);
+        } catch (Exception e) {
+            return AjaxResult.error(e.getMessage());
+        }
+        return AjaxResult.success();
+    }
+
+    /**
+     * 保存采样点
+     * @param sampleTakeDto
+     * @return
+     */
+    @PostMapping("/save/samplePoint")
+    public AjaxResult saveSamplePoint(@RequestBody SampleTakeDto sampleTakeDto){
+        try {
+            adminService.saveSamplePoint(sampleTakeDto);
+        } catch (Exception e) {
+            return AjaxResult.error(e.getMessage());
+        }
+        return AjaxResult.success();
+    }
+
+    /**
+     * 更新审核
+     * @param auditDto
+     * @return
+     */
+    @PostMapping("/update/audit")
+    public AjaxResult updateAudit(@RequestBody AuditDto auditDto){
+        boolean flag = adminService.updateAudit(auditDto);
+        return flag?AjaxResult.success():AjaxResult.error();
     }
 
 }

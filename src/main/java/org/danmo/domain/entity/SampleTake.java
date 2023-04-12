@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import org.danmo.domain.entity.base.BaseEntity;
 
+import java.util.List;
+
 /**
  * 采样点
  * @author danmo

@@ -26,4 +26,6 @@ public class User extends BaseEntity {
 
     private String weixin;
 
+    private String orgId;
+
 }
