@@ -10,13 +10,13 @@ public enum AuditTypeEnum {
      */
     SAMPLE_POINTS(2);
 
-    private int value;
+    private Integer value;
 
-    AuditTypeEnum(int value){
+    AuditTypeEnum(Integer value){
         this.value = value;
     }
 
-    public int getValue(){
+    public Integer getValue(){
         return value;
     }
 }

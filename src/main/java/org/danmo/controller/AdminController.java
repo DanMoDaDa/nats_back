@@ -3,6 +3,7 @@ package org.danmo.controller;
 import org.danmo.domain.AjaxResult;
 import org.danmo.domain.dto.*;
 import org.danmo.domain.entity.User;
+import org.danmo.domain.vo.AuditVo;
 import org.danmo.domain.vo.UserVo;
 import org.danmo.service.AdminService;
 import org.danmo.utils.BeanUtil;
@@ -129,6 +130,44 @@ public class AdminController {
     public AjaxResult updateAudit(@RequestBody AuditDto auditDto){
         boolean flag = adminService.updateAudit(auditDto);
         return flag?AjaxResult.success():AjaxResult.error();
+    }
+
+    /**
+     * 查询审核
+     * @param auditDto
+     * @return
+     */
+    @PostMapping("/List/audit")
+    public AjaxResult listAudit(@RequestBody AuditDto auditDto){
+        List<AuditVo> audits = adminService.listAudit(auditDto);
+        return AjaxResult.success(audits);
+    }
+
+    /**
+     * 重置密码
+     * @param userId
+     * @return
+     */
+    @PostMapping("/reset/password")
+    public AjaxResult resetPassword(String userId){
+        boolean flag = adminService.resetPassword(userId);
+        return flag?AjaxResult.success():AjaxResult.error();
+    }
+
+    @PostMapping("/test")
+    public AjaxResult test(@RequestBody Map<String,Object> map){
+        User user = new User();
+        UserVo userVo = new UserVo();
+        userVo.setToken("123456");
+        userVo.setNickname("ffffff");
+        user.setUsername("abcdef");
+        BeanUtil.copyProperties(user,userVo);
+        userVo.setToken("123456");
+        userVo.setNickname("ffffff");
+        user.setUsername(null);
+        BeanUtil.copyPropertiesIgnoreNull(user,userVo);
+
+        return AjaxResult.success();
     }
 
 }

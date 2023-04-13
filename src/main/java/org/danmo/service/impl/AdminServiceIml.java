@@ -1,7 +1,10 @@
 package org.danmo.service.impl;
 
+import cn.hutool.crypto.SecureUtil;
 import cn.hutool.json.JSONUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
+import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.danmo.domain.dto.AuditDto;
@@ -10,6 +13,7 @@ import org.danmo.domain.dto.SampleTakeDto;
 import org.danmo.domain.entity.*;
 import org.danmo.domain.enumerate.AuditStatusEnum;
 import org.danmo.domain.enumerate.AuditTypeEnum;
+import org.danmo.domain.vo.AuditVo;
 import org.danmo.service.*;
 import org.danmo.utils.BeanUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -122,6 +126,33 @@ public class AdminServiceIml implements AdminService {
         users.forEach(item -> item.setOrgId(orgId));
         boolean flag = userService.saveOrUpdateBatch(users);
         return flag;
+    }
+
+    @Override
+    public boolean resetPassword(String userId) {
+        User user = userService.getById(userId);
+        user.setPassword(SecureUtil.md5("hjt6666"));
+        return userService.updateById(user);
+    }
+
+    @Override
+    public List<AuditVo> listAudit(AuditDto auditDto) {
+        LambdaQueryWrapper<Audit> query = Wrappers.lambdaQuery();
+        List<Audit> audits = auditService.list(query);
+        List<AuditVo> vos = audits.stream().map(item -> {
+            AuditVo auditVo = new AuditVo();
+            BeanUtil.copyProperties(item, auditVo);
+            if (item.getContentType().equals(AuditTypeEnum.ORG.getValue())) {
+                Org org = orgService.getById(item.getContentId());
+                auditVo.setOrg(org);
+            }
+            if (item.getContentType().equals(AuditTypeEnum.SAMPLE_POINTS.getValue())) {
+                SampleTake sampleTake = sampleTakeService.getById(item.getContentId());
+                auditVo.setSampleTake(sampleTake);
+            }
+            return auditVo;
+        }).filter(ObjectUtils::isNotEmpty).collect(Collectors.toList());
+        return vos;
     }
 
     @Override

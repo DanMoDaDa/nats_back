@@ -24,16 +24,21 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public List<User> getList(UserDto dto) {
         LambdaQueryWrapper<User> query = Wrappers.lambdaQuery();
         query.ne(User::getUsername, "admin");
-        if(!StringUtils.isEmpty(dto.getNickname()) && !"".equals(dto.getNickname()))
+        if(!StringUtils.isEmpty(dto.getNickname()) && !"".equals(dto.getNickname())) {
             query.like(User::getNickname , dto.getNickname());
-        if(!StringUtils.isEmpty(dto.getUsername()) && !"".equals(dto.getUsername()))
+        }
+        if(!StringUtils.isEmpty(dto.getUsername()) && !"".equals(dto.getUsername())) {
             query.like(User::getUsername , dto.getUsername());
-        if(!StringUtils.isEmpty(dto.getEmail()) && !"".equals(dto.getEmail()))
+        }
+        if(!StringUtils.isEmpty(dto.getEmail()) && !"".equals(dto.getEmail())) {
             query.like(User::getEmail , dto.getEmail());
-        if(!StringUtils.isEmpty(dto.getPhone()) && !"".equals(dto.getPhone()))
+        }
+        if(!StringUtils.isEmpty(dto.getPhone()) && !"".equals(dto.getPhone())) {
             query.like(User::getPhone , dto.getPhone());
-        if(!StringUtils.isEmpty(dto.getWeixin()) && !"".equals(dto.getWeixin()))
+        }
+        if(!StringUtils.isEmpty(dto.getWeixin()) && !"".equals(dto.getWeixin())) {
             query.like(User::getWeixin , dto.getWeixin());
+        }
         List<User> users = this.list(query);
         return users;
     }

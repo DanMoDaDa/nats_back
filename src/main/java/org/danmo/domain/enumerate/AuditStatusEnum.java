@@ -14,13 +14,13 @@ public enum AuditStatusEnum {
      */
     OVERRULE(0);
 
-    private int value;
+    private Integer value;
 
-    AuditStatusEnum(int value){
+    AuditStatusEnum(Integer value){
         this.value = value;
     }
 
-    public int getValue(){
+    public Integer getValue(){
         return value;
     }
 }
